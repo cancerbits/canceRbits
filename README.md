@@ -20,7 +20,7 @@ remotes::install_github(repo = 'cancerbits/canceRbits', auth_token = 'ghp_xxx')
 	* Make sure to include roxygen documentation
 * run `devtools::document()`
 * add required packages to NAMESPACE file (if there are new ones)
-* (optional) Edit DESCRIPTION file (e.g. add your name)
+* (optional) Edit DESCRIPTION file (e.g. add your name, bump the version number)
 * (optional) Edit overall package documentation in `R/canceRbits.R`
 * (optional but strongly suggested) Add unit test for new functionality (in `tests/testthat/`)
 * check whether package is still OK via `devtools::check(document = FALSE)` or via Rstudio menu: 'Build' > 'Check Package'
