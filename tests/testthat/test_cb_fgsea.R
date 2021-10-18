@@ -1,6 +1,5 @@
 
 test_that("cb_fgsea returns expected results on simple input", {
-  background <- LETTERS
   genesets <- split(LETTERS, f = round((1:length(LETTERS)) / 4))
   names(genesets) <- paste0('gene_set_', 1:length(genesets))
   genes <- LETTERS

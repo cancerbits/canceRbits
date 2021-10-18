@@ -59,14 +59,15 @@ Add documentation and more options to sanitize the geneset labels.
 
 \examples{
 \donttest{
-background <- LETTERS
 genesets <- split(LETTERS, f = round((1:length(LETTERS)) / 4))
-names(genesets) <- paste0('gene_sets_', 1:length(genesets))
-signature <- c('N', 'O', 'V', 'W', 'X')
-cb_hyper(signature = signature,
-         background = background,
-         genesets = genesets, min_size = 2,
-         collapse = FALSE, verbose = FALSE)
+names(genesets) <- paste0('gene_set_', 1:length(genesets))
+genes <- LETTERS
+scores <- 1:(length(LETTERS))
+
+fgsea_res <- cb_fgsea(genes = genes,
+                      scores = scores,
+                      genesets = genesets,
+                      min_size = 2)
 }
 
 }
