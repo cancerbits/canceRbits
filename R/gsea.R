@@ -108,7 +108,7 @@ cb_hyper <- function(signature, background, genesets, min_size = 9,
 #' @param max_size Maximum size of a gene set to be tested (after intersection with input genes) (default is 500)
 #' @param n_leading_edge Number of genes to show in the leadingEdge output column - these are the genes driving the enrichment (default is 10)
 #' @param verbose Boolean indicating whether to show messages (default is TRUE)
-#' @param ... Otional arguments passed on to \code{\link[fgsea:fgsea]{fgsea::fgsea}}
+#' @param ... Optional arguments passed on to \code{\link[fgsea:fgsea]{fgsea::fgsea}}
 #'
 #' @return A table with GSEA results. Each row corresponds to a tested pathway
 #'

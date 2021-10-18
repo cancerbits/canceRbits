@@ -30,7 +30,7 @@ cb_fgsea(
 
 \item{verbose}{Boolean indicating whether to show messages (default is TRUE)}
 
-\item{...}{Otional arguments passed on to \code{\link[fgsea:fgsea]{fgsea::fgsea}}}
+\item{...}{Optional arguments passed on to \code{\link[fgsea:fgsea]{fgsea::fgsea}}}
 }
 \value{
 A table with GSEA results. Each row corresponds to a tested pathway
