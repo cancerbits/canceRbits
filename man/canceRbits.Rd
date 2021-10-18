@@ -13,6 +13,7 @@ Cancer Genomics group at St. Anna Children's Cancer Research Institute.
 These are the main functions used for gene set enrichment:
 \enumerate{
   \item \code{\link{cb_hyper}}
+  \item \code{\link{cb_fgsea}}
 }
 }
 

@@ -25,6 +25,9 @@ remotes::install_github(repo = 'cancerbits/canceRbits', auth_token = 'ghp_xxx')
 * (optional but strongly suggested) Add unit test for new functionality (in `tests/testthat/`)
 * check whether package is still OK via `devtools::check(document = FALSE)` or via Rstudio menu: 'Build' > 'Check Package'
 
+### Conventions
+Exported functions have a `cb_` prefix in their name.
+
 ## Suggested reading
 
 [R packages by Hadley Wickham and Jenny Bryan](https://r-pkgs.org/index.html)

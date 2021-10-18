@@ -17,6 +17,12 @@ A data frame of results
 \description{
 Load local copy of EnrichR gene sets
 }
+\section{Details}{
+
+The input tsv files are meant to be in the format as provided
+at \url{https://maayanlab.cloud/Enrichr/#libraries}.
+}
+
 \examples{
 \donttest{
 filepath <- paste0('/data_synology_rg3/cancerbits/users/',
