@@ -14,7 +14,7 @@ To install a specific commit (e.g. a commit from April 1, 2022)
 ```
 remotes::install_github(repo = 'cancerbits/canceRbits', ref = '10b959a')
 ```
-
+(All commits are listed [here](https://github.com/cancerbits/canceRbits/commits/main))
 
 ## Workflow for updating the package
 * Add/edit one or more .R files in R directory
