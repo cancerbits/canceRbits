@@ -10,7 +10,15 @@ To install the latest version
 remotes::install_github(repo = 'cancerbits/canceRbits')
 ```
 
-To install a specific commit (e.g. a commit from April 1, 2022)
+### For reproducibility, e.g. in a dockerfile, use approaches below
+
+To install a specific version given its tag
+```
+remotes::install_github(repo = 'cancerbits/canceRbits', ref = 'v0.1.2')
+```
+(All tags are listed [here](https://github.com/cancerbits/canceRbits/tags))
+
+To install a specific commit
 ```
 remotes::install_github(repo = 'cancerbits/canceRbits', ref = '10b959a')
 ```
