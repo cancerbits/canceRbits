@@ -37,7 +37,11 @@
 #'
 #' @importFrom stats loess
 #' @importFrom Seurat CreateSeuratObject PercentageFeatureSet
-#' @import ggplot2
+#' @importFrom ggplot2 ggplot geom_histogram geom_vline xlab ylab annotate
+#' @importFrom ggplot2 theme_get unit scale_x_continuous theme element_blank
+#' @importFrom ggplot2 annotation_logticks geom_point scale_color_manual scale_y_continuous
+#' @importFrom ggplot2 aes
+#' @importFrom rlang .data
 #'
 cb_filter_count_matrix <- function(
   counts,
@@ -60,9 +64,9 @@ cb_filter_count_matrix <- function(
   keep <- 1:ncol(s)
 
   # 1) percent mitochondrial reads
-  keep_this <- s$percent.mito <= percent_mito_th
+  keep_this <- s[['percent.mito']] <= percent_mito_th
   txt <- sprintf("Remove %d of %d\n(%1.1f%%) cells", sum(!keep_this), length(keep), sum(!keep_this) / length(keep) * 100)
-  p1 <- ggplot(s@meta.data, aes_(x = ~percent.mito)) +
+  p1 <- ggplot(s@meta.data, aes(x = .data$percent.mito)) +
     geom_histogram(binwidth = 1) +
     geom_vline(xintercept = c(-Inf, percent_mito_th), color = 'red') +
     xlab('Mitochondrial reads in %') +
@@ -78,7 +82,7 @@ cb_filter_count_matrix <- function(
   th <- c(min(nFeature_RNA[keep_this]) - .Machine$double.eps*10,
           max(nFeature_RNA[keep_this]) + .Machine$double.eps*10)
   txt <- sprintf("Remove %d of %d\n(%1.1f%%) cells", sum(!keep_this), length(keep), sum(!keep_this) / length(keep) * 100)
-  p2 <- ggplot(s@meta.data[keep, ], aes_(x = ~nFeature_RNA)) +
+  p2 <- ggplot(s@meta.data[keep, ], aes(x = .data$nFeature_RNA)) +
     geom_histogram(binwidth = 33) +
     geom_vline(xintercept = th, color = 'red') +
     xlab('Number of genes detected') +
@@ -93,7 +97,7 @@ cb_filter_count_matrix <- function(
   th <- c(min(nCount_RNA[keep_this]) - .Machine$double.eps*10,
           max(nCount_RNA[keep_this]) + .Machine$double.eps*10)
   txt <- sprintf("Remove %d of %d\n(%1.1f%%) cells", sum(!keep_this), length(keep), sum(!keep_this) / length(keep) * 100)
-  p3 <- ggplot(s@meta.data[keep, ], aes_(x = ~log10(nCount_RNA))) +
+  p3 <- ggplot(s@meta.data[keep, ], aes(x = log10(.data$nCount_RNA))) +
     geom_histogram(binwidth = 0.04) +
     geom_vline(xintercept = log10(th), color = 'red') +
     xlab('Number of transcripts') +
@@ -110,7 +114,7 @@ cb_filter_count_matrix <- function(
   md$nFeature_outlier <- scale(mod$residuals) < feature_outlier_z_th[1] | scale(mod$residuals) > feature_outlier_z_th[2]
   keep_this <- !md$nFeature_outlier
   txt <- sprintf("Remove %d of %d\n(%1.1f%%) cells", sum(!keep_this), length(keep), sum(!keep_this) / length(keep) * 100)
-  p4 <- ggplot(md, aes_( x = ~log10(nCount_RNA), y = ~log10(nFeature_RNA), color = ~nFeature_outlier)) +
+  p4 <- ggplot(md, aes(x = log10(.data$nCount_RNA), y = log10(.data$nFeature_RNA), color = .data$nFeature_outlier)) +
     #coord_trans(x = 'log10', y = 'log10') +
     geom_point(size = 0.5) + scale_color_manual(values = c('grey35', 'red'), guide = 'none') +
     xlab('Transcripts') + ylab('Genes') +
