@@ -17,3 +17,10 @@ These are the main functions used for gene set enrichment:
 }
 }
 
+\section{QC/filter functions}{
+
+\enumerate{
+  \item \code{\link{cb_filter_count_matrix}}
+}
+}
+

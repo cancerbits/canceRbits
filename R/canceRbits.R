@@ -10,6 +10,10 @@
 #'   \item \code{\link{cb_fgsea}}
 #' }
 #'
+#' @section QC/filter functions:
+#' \enumerate{
+#'   \item \code{\link{cb_filter_count_matrix}}
+#' }
 #'
 #' @docType package
 #' @name canceRbits
