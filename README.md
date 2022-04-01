@@ -5,15 +5,16 @@ Cancer Genomics group at St. Anna Children's Cancer Research Institute.
 
 ## To install from github
 
-If a `GITHUB_PAT` environment variable is already set to your access token
+To install the latest version
 ```
 remotes::install_github(repo = 'cancerbits/canceRbits')
 ```
 
-Else, pass your token
+To install a specific commit (e.g. a commit from April 1, 2022)
 ```
-remotes::install_github(repo = 'cancerbits/canceRbits', auth_token = 'ghp_xxx')
+remotes::install_github(repo = 'cancerbits/canceRbits', ref = '10b959a')
 ```
+
 
 ## Workflow for updating the package
 * Add/edit one or more .R files in R directory
