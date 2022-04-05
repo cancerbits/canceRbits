@@ -38,7 +38,10 @@ of features relationship; default is \code{c(-5, 5)}}
 \item{verbose}{Boolean indicating whether to show messages; default is TRUE}
 }
 \value{
-A list with components: 1) filtered object, 2) list of figures, 3) figure title
+A list with components:
+1) "filtered" filtered object,
+2) "figures" list of figures,
+3) "fig_title" figure title
 }
 \description{
 Filter a scRNA-seq count matrix based on QC metrics

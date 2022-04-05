@@ -1,0 +1,76 @@
+---
+title: 'Single Sample Overview'
+author: '`r Sys.info()["user"]`'
+date: '`r format(Sys.time(), "%B %d, %Y %H:%M:%S %Z")`'
+output:
+  html_document: 
+    toc: yes
+    toc_float: yes
+    code_folding: hide
+    highlight: pygments
+    df_print: kable
+params:
+  sample_name: ~
+  sample_path: ~
+  out_rds_path: ~
+---
+
+# Setup
+```{r}
+library('Seurat')
+library('canceRbits')
+library('patchwork')
+SETUP_TIME <- proc.time()['elapsed']
+```
+
+## Parameters
+```{r}
+print(params)
+```
+
+# Read data
+```{r}
+counts <- Read10X_h5(filename = params$sample_path)
+```
+
+# Filter
+```{r}
+filter_out <- cb_filter_count_matrix(counts = counts, sample_id = params$sample_name)
+```
+
+
+```{r}
+fig <- wrap_plots(filter_out$figures) +
+  plot_annotation(title = filter_out$fig_title)
+show(fig)
+```
+
+# Run Seurat pipeline
+```{r}
+tmp <- cb_seurat_pipeline(filter_out$filtered)
+```
+
+
+```{r, fig.width=12, fig.height=14, out.width='100%'}
+fig <- (tmp$figures[[1]] / tmp$figures[[3]]) + plot_layout(heights = c(3,2))
+fig <- (fig | tmp$figures[[2]]) + plot_layout(widths = c(1, 2))
+fig <- fig / tmp$figures[[4]] + plot_layout(heights = c(3,1))
+
+show(fig + plot_annotation(title = tmp$fig_title))
+```
+
+# Save object
+```{r}
+if (!is.null(params$out_rds_path)) {
+  saveRDS(object = tmp$s, file = params$out_rds_path)
+}
+```
+
+# Appendix
+
+Runtime: `r round(proc.time()['elapsed'] - SETUP_TIME)` seconds
+
+Session info
+```{r}
+sessionInfo()
+```

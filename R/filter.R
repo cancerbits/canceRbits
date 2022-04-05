@@ -12,7 +12,10 @@
 #' @param sample_id Optional string giving the sample name; will be used if return value is a Seurat object; default is NULL
 #' @param verbose Boolean indicating whether to show messages; default is TRUE
 #'
-#' @return A list with components: 1) filtered object, 2) list of figures, 3) figure title
+#' @return A list with components:
+#' 1) "filtered" filtered object,
+#' 2) "figures" list of figures,
+#' 3) "fig_title" figure title
 #'
 #' @section Details:
 #' Four filters are applied in succession:
