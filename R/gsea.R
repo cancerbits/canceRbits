@@ -47,7 +47,15 @@
 #' @importFrom rlang .data
 cb_hyper <- function(signature, background, genesets, min_size = 9,
                       max_size = 500, collapse = TRUE, verbose = TRUE) {
-  # make sure signature genes are inlcuded in background
+
+  if (!requireNamespace("hypeR", quietly = TRUE)) {
+    stop(
+      "Package \"hypeR\" must be installed to use this function.",
+      call. = FALSE
+    )
+  }
+
+  # make sure signature genes are included in background
   background <- union(signature, background)
   # intersect gene_sets with background
   genesets <- lapply(genesets, function(x) intersect(x, background))
@@ -147,6 +155,14 @@ cb_hyper <- function(signature, background, genesets, min_size = 9,
 #' @importFrom rlang .data
 cb_fgsea <- function(genes, scores, genesets, min_size = 9, max_size = 500,
                      n_leading_edge = 10, verbose = TRUE, ...) {
+
+  if (!requireNamespace("fgsea", quietly = TRUE)) {
+    stop(
+      "Package \"fgsea\" must be installed to use this function.",
+      call. = FALSE
+    )
+  }
+
   # If there is nothing to test, return empty data frame
   if (length(genes) == 0) {
     res <- data.frame(pathway = as.character(),
