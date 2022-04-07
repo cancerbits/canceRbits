@@ -30,7 +30,7 @@ print(params)
 
 # Read data
 ```{r}
-counts <- Read10X_h5(filename = params$sample_path)
+counts <- cb_load_counts(path = params$sample_path)
 ```
 
 # Filter

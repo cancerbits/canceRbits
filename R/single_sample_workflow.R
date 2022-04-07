@@ -78,3 +78,35 @@ cb_seurat_pipeline <- function(x, max_pc = 15, verbose = FALSE) {
 
   return(list(s = s, figures = list(p1 = p1, p2 = p2, p3 = p3, p4 = p4), fig_title = common_title))
 }
+
+
+#' Load count matrix given file
+#'
+#' @param path File path (h5 or rds)
+#'
+#' @return Sparse count matrix
+#'
+#' @section Details:
+#' Looks at file extension to use the appropriate function to load the data.
+#' Supported at the moment: H5, HDF5, RDS (capitalization does not matter)
+#'
+#' @export
+#'
+#' @importFrom tools file_ext
+#' @importFrom Seurat Read10X_h5
+cb_load_counts <- function(path) {
+  ext <- toupper(file_ext(path))
+  if (any(ext %in% c('H5', 'HDF5'))) {
+    counts <- Read10X_h5(filename = path)
+  } else if (ext == 'RDS') {
+    object <- readRDS(file = path)
+    if (inherits(x = object, what = 'dgCMatrix')) {
+      counts <- object
+    } else {
+      stop('Expected dgCMatrix in Rds file')
+    }
+  } else {
+    stop('No or unknown extension in path')
+  }
+  return(counts)
+}

@@ -5,7 +5,7 @@
 \title{Create a single sample report for scRNA-seq data}
 \usage{
 cb_single_sample_report(
-  sample_path,
+  sample_counts,
   out_report_path,
   sample_name = "foo",
   out_rds_path = NULL,
@@ -14,7 +14,7 @@ cb_single_sample_report(
 )
 }
 \arguments{
-\item{sample_path}{Path to h5 file}
+\item{sample_counts}{Either a sparse count matrix, a path to h5 file, or a path to an rds file}
 
 \item{out_report_path}{Path of the resulting report}
 
