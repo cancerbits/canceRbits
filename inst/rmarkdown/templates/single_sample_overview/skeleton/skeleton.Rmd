@@ -17,7 +17,6 @@ params:
 
 # Setup
 ```{r}
-library('Seurat')
 library('canceRbits')
 library('patchwork')
 SETUP_TIME <- proc.time()['elapsed']
