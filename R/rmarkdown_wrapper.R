@@ -28,18 +28,27 @@ cb_single_sample_report <- function(sample_counts,
     )
   }
 
+  # get the path to the rmarkdown template that comes with this package
   rmd_path <- system.file('rmarkdown', 'templates', 'single_sample_overview',
                           'skeleton', 'skeleton.Rmd', package = 'canceRbits')
 
   # if the input is not a path, write the matrix to a file
-  do_cleanup <- FALSE
+  cleanup_in_rds <- FALSE
   if (inherits(x = sample_counts, what = 'dgCMatrix')) {
     tmp_rds_path <- paste0(tempfile(), '.Rds')
     saveRDS(object = sample_counts, file = tmp_rds_path)
     sample_counts <- tmp_rds_path
-    do_cleanup <- TRUE
+    cleanup_in_rds <- TRUE
   } else if (!inherits(x = sample_counts, what = 'character')) {
     stop('sample_counts needs to be a dgCMatrix or a character vector of length one')
+  }
+
+  # if we want to return a Seurat object, but don't want it written to a
+  # permanent file, we need a tmp file
+  cleanup_out_rds <- FALSE
+  if (return_seurat && is.null(out_rds_path)) {
+    out_rds_path <- paste0(tempfile(), '.Rds')
+    cleanup_out_rds <- TRUE
   }
 
   rmarkdown::render(
@@ -54,12 +63,16 @@ cb_single_sample_report <- function(sample_counts,
     ...
   )
 
-  if (do_cleanup) {
+  if (cleanup_in_rds) {
     unlink(sample_counts)
   }
 
   if (return_seurat) {
-    return(readRDS(file = out_rds_path))
+    s <- readRDS(file = out_rds_path)
+    if (cleanup_out_rds) {
+      unlink(out_rds_path)
+    }
+    return(s)
   } else {
     return(invisible())
   }
