@@ -22,6 +22,13 @@
 cb_run_infercnv <- function(counts, conditions, out_dir, ref_conditions = NULL,
                             gene_order_file = NULL, num_threads = 1, keep_infercnv_scores = FALSE) {
 
+  if (!requireNamespace("infercnv", quietly = TRUE)) {
+    stop(
+      "Package \"infercnv\" must be installed to use this function.",
+      call. = FALSE
+    )
+  }
+
   # create output directory if it does not exist
   dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
