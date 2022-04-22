@@ -1,0 +1,2 @@
+name: Run inferCNV
+description: Run inferCNV for one scRNA-seq sample

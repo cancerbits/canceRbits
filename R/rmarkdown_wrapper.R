@@ -77,3 +77,93 @@ cb_single_sample_report <- function(sample_counts,
     return(invisible())
   }
 }
+
+
+#' Create an inferCNV report
+#'
+#' @param counts Count matrix
+#' @param conditions The cell conditions, or clusters/group labels; its length must match the number of columns of the count matrix
+#' @param out_report_path Path of the resulting report
+#' @param out_dir The output directory for inferCNV, will be created if it does not exist; the default is NULL and a temporary directory will be used
+#' @param ref_conditions The conditions that make up the reference (e.g. wildtype); default is NULL
+#' and the mean of all cells is used as reference
+#' @param gene_order_file The file with gene to location mappings; default is NULL and it will be downloaded from
+#' https://data.broadinstitute.org/Trinity/CTAT/cnv/gencode_v19_gene_pos.txt
+#' @param num_threads The number of CPU threads inferCNV will use; default is 1
+#' @param keep_infercnv_scores Boolean, if TRUE infercnv scores are kept in the output directory, else only the
+#' infercnv.png file is kept; default is FALSE
+#' @param ... parameters passed to rmarkdown::render, e.g. quiet = TRUE
+#'
+#' @return NULL
+#'
+#' @section Details:
+#' See cb_run_infercnv for details
+#'
+#' @export
+cb_infercnv_report <- function(counts, conditions, out_report_path, out_dir = NULL,
+                               ref_conditions = NULL, gene_order_file = NULL,
+                               num_threads = 1, keep_infercnv_scores = FALSE, ...) {
+
+
+  if (!requireNamespace("rmarkdown", quietly = TRUE)) {
+    stop(
+      "Package \"rmarkdown\" must be installed to use this function.",
+      call. = FALSE
+    )
+  }
+
+  # get the path to the rmarkdown template that comes with this package
+  rmd_path <- system.file('rmarkdown', 'templates', 'infercnv',
+                          'skeleton', 'skeleton.Rmd', package = 'canceRbits')
+
+  # create temp data file
+  data_path <- paste0(tempfile(pattern = 'infercnv_report_data_'), '.Rds')
+  saveRDS(object = list(counts = counts, conditions = conditions, ref_conditions = ref_conditions),
+          file = data_path)
+
+  # do we need to clean up?
+  do_clean_out_dir <- TRUE
+  if (!is.null(out_dir) | keep_infercnv_scores) {
+    do_clean_out_dir <- FALSE
+  }
+
+  # set out_dir if missing
+  if (is.null(out_dir)) {
+    out_dir <- tempfile(pattern = 'infercnv_out_dir_')
+  }
+
+  # make sure all paths are expanded
+  out_report_path <- path.expand(out_report_path)
+  out_dir <- path.expand(out_dir)
+  if (!is.null(gene_order_file)) {
+    gene_order_file <- path.expand(gene_order_file)
+  }
+
+  # render the report
+  rmarkdown::render(
+    input = rmd_path,
+    output_dir = dirname(out_report_path),
+    knit_root_dir = tempdir(),
+    envir = new.env(),
+    params = list(data_path = data_path,
+                  gene_order_file = gene_order_file,
+                  out_dir = out_dir,
+                  num_threads = num_threads,
+                  keep_infercnv_scores = keep_infercnv_scores),
+    output_file = basename(out_report_path),
+    ...
+  )
+
+  # Clean up
+  if (do_clean_out_dir) {
+    message('Removing the temporary output directory')
+    unlink(x = out_dir, recursive = TRUE)
+  } else {
+    message('inferCNV output files are in ', out_dir)
+  }
+
+  unlink(data_path)
+
+  return(invisible())
+}
+
