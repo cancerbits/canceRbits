@@ -51,10 +51,14 @@ cb_single_sample_report <- function(sample_counts,
     cleanup_out_rds <- TRUE
   }
 
+  # set up a unique temp knit root dir
+  krd <- tempfile()
+  dir.create(krd)
+
   rmarkdown::render(
     input = rmd_path,
     output_dir = dirname(out_report_path),
-    knit_root_dir = tempdir(),
+    knit_root_dir = krd,
     envir = new.env(),
     params = list(sample_path = sample_counts,
                   sample_name = sample_name,
@@ -62,6 +66,9 @@ cb_single_sample_report <- function(sample_counts,
     output_file = basename(out_report_path),
     ...
   )
+
+  # remove the knit root directory
+  unlink(x = krd, recursive = TRUE, force = TRUE)
 
   if (cleanup_in_rds) {
     unlink(sample_counts)
