@@ -63,8 +63,10 @@ pseudobulk_de <- function(mat, grouping, G, test_method, test_type) {
 
   if (test_method == 'edgeR') {
     res <- de_edger(mat = pb, grouping = pb_group, test_type = test_type)
+  } else if (test_method == 'DESeq') {
+    res <- de_deseq(mat = pb, grouping = pb_group, test_type = test_type)
   } else {
-    stop('test_method unknown')
+    stop('test_method unknown - must be edgeR or DESeq')
   }
   return(res)
 }
@@ -105,5 +107,28 @@ de_edger <- function(mat, grouping, test_type) {
     dplyr::rename(pval = .data$PValue) %>%
     dplyr::mutate(FDR = stats::p.adjust(.data$pval, method = 'fdr')) %>%
     dplyr::arrange(.data$FDR, -abs(.data$logFC))
+  return(res)
+}
+
+de_deseq <- function(mat, grouping, test_type) {
+  dds <- DESeq2::DESeqDataSetFromMatrix(mat, data.frame(grouping = grouping), ~ grouping)
+  if (test_type == 'Wald') {
+    dds <- DESeq2::DESeq(dds, test = 'Wald', quiet = TRUE)
+  } else if (test_type == 'LRT') {
+    dds <- DESeq2::DESeq(dds, test = 'LRT', reduced= ~ 1, quiet = TRUE)
+  } else {
+    stop('test_type needs to be either Wald or LRT')
+  }
+  coef_name <- DESeq2::resultsNames(dds)[2]
+
+  if (requireNamespace('apeglm', quietly = TRUE)) {
+    resLFC <- DESeq2::lfcShrink(dds, coef = coef_name, type = 'apeglm', quiet = TRUE)
+  } else {
+    message("DESeq2 logFC shrinkage: apeglm package not found, using type = 'normal' instead")
+    resLFC <- DESeq2::lfcShrink(dds, coef = coef_name, type = 'normal', quiet = TRUE)
+  }
+
+  res <- as.data.frame(resLFC) %>%
+    tibble::rownames_to_column(var = 'feature')
   return(res)
 }

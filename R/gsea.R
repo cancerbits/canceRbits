@@ -3,9 +3,9 @@
 #' @param signature Character vector of signature genes (the foreground set)
 #' @param background Character vector of genes (the background set)
 #' @param genesets List of character vectors of pre-defined gene sets (e.g. pathways)
-#' @param min_size Minimum size of a gene set to be tested (after intersection with background) (default is 9)
+#' @param min_size Minimum size of a gene set to be tested (after intersection with background) (default is 5)
 #' @param max_size Maximum size of a gene set to be tested (after intersection with background) (default is 500)
-#' @param collapse Boolean indicating whether in the output lower ranking gene sets should be removed if they are 99\% included in a higher ranking one (default is TRUE)
+#' @param collapse Boolean indicating whether in the output lower ranking gene sets should be removed if they are 99\% included in a higher ranking one; may be slow (default is FALSE)
 #' @param verbose Boolean indicating whether to show messages (default is TRUE)
 #'
 #' @return A data frame of results
@@ -45,8 +45,8 @@
 #' @importFrom magrittr %>%
 #' @importFrom dplyr mutate arrange
 #' @importFrom rlang .data
-cb_hyper <- function(signature, background, genesets, min_size = 9,
-                      max_size = 500, collapse = TRUE, verbose = TRUE) {
+cb_hyper <- function(signature, background, genesets, min_size = 5,
+                      max_size = 500, collapse = FALSE, verbose = TRUE) {
 
   if (!requireNamespace("hypeR", quietly = TRUE)) {
     stop(
@@ -104,7 +104,8 @@ cb_hyper <- function(signature, background, genesets, min_size = 9,
     kick_out <- apply(tmp * lower.tri(tmp), 1, max) >= 0.99
     hyp_res <- hyp_res[!kick_out, ]
   }
-  mutate(hyp_res, label = gsub(pattern = ' \\(GO:\\d+\\)$', replacement = '', x = .data$label))
+  #mutate(hyp_res, label = gsub(pattern = ' \\(GO:\\d+\\)$', replacement = '', x = .data$label))
+  hyp_res
 }
 
 #' Perform a scored gene set enrichment analysis

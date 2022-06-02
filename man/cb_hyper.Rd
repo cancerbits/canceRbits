@@ -8,9 +8,9 @@ cb_hyper(
   signature,
   background,
   genesets,
-  min_size = 9,
+  min_size = 5,
   max_size = 500,
-  collapse = TRUE,
+  collapse = FALSE,
   verbose = TRUE
 )
 }
@@ -21,11 +21,11 @@ cb_hyper(
 
 \item{genesets}{List of character vectors of pre-defined gene sets (e.g. pathways)}
 
-\item{min_size}{Minimum size of a gene set to be tested (after intersection with background) (default is 9)}
+\item{min_size}{Minimum size of a gene set to be tested (after intersection with background) (default is 5)}
 
 \item{max_size}{Maximum size of a gene set to be tested (after intersection with background) (default is 500)}
 
-\item{collapse}{Boolean indicating whether in the output lower ranking gene sets should be removed if they are 99\% included in a higher ranking one (default is TRUE)}
+\item{collapse}{Boolean indicating whether in the output lower ranking gene sets should be removed if they are 99\% included in a higher ranking one; may be slow (default is FALSE)}
 
 \item{verbose}{Boolean indicating whether to show messages (default is TRUE)}
 }

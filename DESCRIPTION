@@ -23,6 +23,8 @@ Imports:
     tools
 RoxygenNote: 7.1.2
 Suggests: 
+    apeglm,
+    DESeq2,
     edgeR,
     fgsea,
     hypeR,
