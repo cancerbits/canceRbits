@@ -55,6 +55,9 @@ cb_single_sample_report <- function(sample_counts,
   krd <- tempfile()
   dir.create(krd)
 
+  old_option <- options('knitr.duplicate.label')
+  options(knitr.duplicate.label = "allow")
+
   rmarkdown::render(
     input = rmd_path,
     output_dir = dirname(out_report_path),
@@ -66,6 +69,8 @@ cb_single_sample_report <- function(sample_counts,
     output_file = basename(out_report_path),
     ...
   )
+
+  options(knitr.duplicate.label = old_option)
 
   # remove the knit root directory
   unlink(x = krd, recursive = TRUE, force = TRUE)
@@ -146,11 +151,18 @@ cb_infercnv_report <- function(counts, conditions, out_report_path, out_dir = NU
     gene_order_file <- path.expand(gene_order_file)
   }
 
+  # set up a unique temp knit root dir
+  krd <- tempfile()
+  dir.create(krd)
+
+  old_option <- options('knitr.duplicate.label')
+  options(knitr.duplicate.label = "allow")
+
   # render the report
   rmarkdown::render(
     input = rmd_path,
     output_dir = dirname(out_report_path),
-    knit_root_dir = tempdir(),
+    knit_root_dir = krd,
     envir = new.env(),
     params = list(data_path = data_path,
                   gene_order_file = gene_order_file,
@@ -160,6 +172,11 @@ cb_infercnv_report <- function(counts, conditions, out_report_path, out_dir = NU
     output_file = basename(out_report_path),
     ...
   )
+
+  options(knitr.duplicate.label = old_option)
+
+  # remove the knit root directory
+  unlink(x = krd, recursive = TRUE, force = TRUE)
 
   # Clean up
   if (do_clean_out_dir) {
