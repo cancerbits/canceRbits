@@ -7,6 +7,8 @@
 #' and no file will. be written
 #' @param return_seurat Boolean indicating whether to return the final seurat object;
 #' default is FALSE and will return NULL invisibly
+#' @param seurat_max_pc The number of principal components to use; default is 15
+#' @param seurat_cluster_res Resolution parameter used with FindClusters; default is 0.8
 #' @param ... parameters passed to rmarkdown::render, e.g. quiet = TRUE
 #'
 #' @return NULL
@@ -20,7 +22,9 @@ cb_single_sample_report <- function(sample_counts,
                                     out_report_path,
                                     sample_name = 'foo',
                                     out_rds_path = NULL,
-                                    return_seurat = FALSE, ...) {
+                                    return_seurat = FALSE,
+                                    seurat_max_pc = 15,
+                                    seurat_cluster_res = 0.8, ...) {
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop(
       "Package \"rmarkdown\" must be installed to use this function.",
@@ -65,7 +69,9 @@ cb_single_sample_report <- function(sample_counts,
     envir = new.env(),
     params = list(sample_path = sample_counts,
                   sample_name = sample_name,
-                  out_rds_path = out_rds_path),
+                  out_rds_path = out_rds_path,
+                  seurat_max_pc = seurat_max_pc,
+                  seurat_cluster_res = seurat_cluster_res),
     output_file = basename(out_report_path),
     ...
   )

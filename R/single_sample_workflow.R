@@ -2,7 +2,8 @@
 #' Run a Seurat workflow
 #'
 #' @param x Sparse matrix or Seurat object
-#' @param max_pc The number of principal components to use
+#' @param max_pc The number of principal components to use; default is 15
+#' @param cluster_res Resolution parameter used with FindClusters; default is 0.8
 #' @param verbose Boolean indicating whether to print progress; is passed on
 #' to most functions used internally; default is FALSE
 #'
@@ -40,7 +41,7 @@
 #' # Coming soon
 #' }
 #' @md
-cb_seurat_pipeline <- function(x, max_pc = 15, verbose = FALSE) {
+cb_seurat_pipeline <- function(x, max_pc = 15, cluster_res = 0.8, verbose = FALSE) {
   if (inherits(x = x, what = 'dgCMatrix')) {
     s <- CreateSeuratObject(counts = x)
   } else if (inherits(x = x, what = 'Seurat')) {
@@ -55,7 +56,7 @@ cb_seurat_pipeline <- function(x, max_pc = 15, verbose = FALSE) {
   dims <- 1:max_pc
   s <- RunUMAP(s, dims = dims, verbose = verbose)
   s <- FindNeighbors(s, reduction = "pca", dims = dims, verbose = verbose)
-  s <- FindClusters(s, verbose = verbose)
+  s <- FindClusters(s, resolution = cluster_res, verbose = verbose)
 
   s$RNA@misc$markers <- cb_pos_markers(counts = s$RNA@counts, grouping = s$seurat_clusters)
   s$RNA@misc$top_markers <- group_by(s$RNA@misc$markers, .data$group) %>%

@@ -10,6 +10,8 @@ cb_single_sample_report(
   sample_name = "foo",
   out_rds_path = NULL,
   return_seurat = FALSE,
+  seurat_max_pc = 15,
+  seurat_cluster_res = 0.8,
   ...
 )
 }
@@ -25,6 +27,10 @@ and no file will. be written}
 
 \item{return_seurat}{Boolean indicating whether to return the final seurat object;
 default is FALSE and will return NULL invisibly}
+
+\item{seurat_max_pc}{The number of principal components to use; default is 15}
+
+\item{seurat_cluster_res}{Resolution parameter used with FindClusters; default is 0.8}
 
 \item{...}{parameters passed to rmarkdown::render, e.g. quiet = TRUE}
 }

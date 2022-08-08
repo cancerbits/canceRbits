@@ -21,7 +21,7 @@ cb_celltypist(
 \item{verbose}{Show or hide progress; default is FALSE}
 }
 \value{
-A list of data frames of predictions
+A named list (one entry per model) of data frames of predictions
 }
 \description{
 Run celltypist

@@ -4,12 +4,14 @@
 \alias{cb_seurat_pipeline}
 \title{Run a Seurat workflow}
 \usage{
-cb_seurat_pipeline(x, max_pc = 15, verbose = FALSE)
+cb_seurat_pipeline(x, max_pc = 15, cluster_res = 0.8, verbose = FALSE)
 }
 \arguments{
 \item{x}{Sparse matrix or Seurat object}
 
-\item{max_pc}{The number of principal components to use}
+\item{max_pc}{The number of principal components to use; default is 15}
+
+\item{cluster_res}{Resolution parameter used with FindClusters; default is 0.8}
 
 \item{verbose}{Boolean indicating whether to print progress; is passed on
 to most functions used internally; default is FALSE}

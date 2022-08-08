@@ -13,6 +13,8 @@ params:
   sample_name: ~
   sample_path: ~
   out_rds_path: ~
+  seurat_max_pc: 15
+  seurat_cluster_res: 0.8
 ---
 
 # Setup
@@ -46,7 +48,8 @@ show(fig)
 
 # Run Seurat pipeline
 ```{r}
-tmp <- cb_seurat_pipeline(filter_out$filtered)
+tmp <- cb_seurat_pipeline(filter_out$filtered, max_pc = params$seurat_max_pc,
+                          cluster_res = params$seurat_cluster_res)
 ```
 
 
