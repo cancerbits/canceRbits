@@ -4,14 +4,28 @@
 \alias{cb_seurat_pipeline}
 \title{Run a Seurat workflow}
 \usage{
-cb_seurat_pipeline(x, max_pc = 15, cluster_res = 0.8, verbose = FALSE)
+cb_seurat_pipeline(
+  x,
+  max_pc = 15,
+  metric = "manhattan",
+  k_param = 20,
+  n_neighbors = 40,
+  cluster_res = 0.3,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{x}{Sparse matrix or Seurat object}
 
 \item{max_pc}{The number of principal components to use; default is 15}
 
-\item{cluster_res}{Resolution parameter used with FindClusters; default is 0.8}
+\item{metric}{Distance metric to use for FindNeighbors and RunUMAP; default is manhattan}
+
+\item{k_param}{k.param parameter for FindNeighbors; default is 20}
+
+\item{n_neighbors}{n.neighbors parameter for RunUMAP; default is 40}
+
+\item{cluster_res}{Resolution parameter used with FindClusters; default is 0.3}
 
 \item{verbose}{Boolean indicating whether to print progress; is passed on
 to most functions used internally; default is FALSE}

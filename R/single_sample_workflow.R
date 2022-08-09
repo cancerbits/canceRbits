@@ -3,7 +3,10 @@
 #'
 #' @param x Sparse matrix or Seurat object
 #' @param max_pc The number of principal components to use; default is 15
-#' @param cluster_res Resolution parameter used with FindClusters; default is 0.8
+#' @param cluster_res Resolution parameter used with FindClusters; default is 0.3
+#' @param metric Distance metric to use for FindNeighbors and RunUMAP; default is manhattan
+#' @param k_param k.param parameter for FindNeighbors; default is 20
+#' @param n_neighbors n.neighbors parameter for RunUMAP; default is 40
 #' @param verbose Boolean indicating whether to print progress; is passed on
 #' to most functions used internally; default is FALSE
 #'
@@ -41,7 +44,9 @@
 #' # Coming soon
 #' }
 #' @md
-cb_seurat_pipeline <- function(x, max_pc = 15, cluster_res = 0.8, verbose = FALSE) {
+cb_seurat_pipeline <- function(x, max_pc = 15, metric = 'manhattan',
+                               k_param = 20, n_neighbors = 40,
+                               cluster_res = 0.3, verbose = FALSE) {
   if (inherits(x = x, what = 'dgCMatrix')) {
     s <- CreateSeuratObject(counts = x)
   } else if (inherits(x = x, what = 'Seurat')) {
@@ -54,8 +59,10 @@ cb_seurat_pipeline <- function(x, max_pc = 15, cluster_res = 0.8, verbose = FALS
   s <- RunPCA(s, npcs = max_pc, verbose = verbose)
   #ElbowPlot(s, ndims = 50)
   dims <- 1:max_pc
-  s <- RunUMAP(s, dims = dims, verbose = verbose)
-  s <- FindNeighbors(s, reduction = "pca", dims = dims, verbose = verbose)
+  s <- RunUMAP(s, dims = dims, n.neighbors = n_neighbors, metric = metric,
+               verbose = verbose)
+  s <- FindNeighbors(s, reduction = "pca", dims = dims, verbose = verbose,
+                     k.param = k_param, nn.method = "annoy", annoy.metric = metric)
   s <- FindClusters(s, resolution = cluster_res, verbose = verbose)
 
   s$RNA@misc$markers <- cb_pos_markers(counts = s$RNA@counts, grouping = s$seurat_clusters)

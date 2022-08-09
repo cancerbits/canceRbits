@@ -1,7 +1,7 @@
 Package: canceRbits
 Type: Package
 Title: Cancer genomics toolbox
-Version: 0.1.4.9005
+Version: 0.1.5
 Authors@R: person(given = 'Christoph', family = 'Hafemeister', email = 'christoph.hafemeister@ccri.at', role = c('aut', 'cre'), comment = c(ORCID = '0000-0001-6365-8254'))
 Description: Wrapper and helper functions commonly used by the Developmental 
     Cancer Genomics group at St. Anna Children's Cancer Research Institute.

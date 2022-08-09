@@ -11,7 +11,10 @@ cb_single_sample_report(
   out_rds_path = NULL,
   return_seurat = FALSE,
   seurat_max_pc = 15,
-  seurat_cluster_res = 0.8,
+  seurat_cluster_res = 0.3,
+  seurat_metric = "manhattan",
+  seurat_k_param = 20,
+  seurat_n_neighbors = 40,
   ...
 )
 }
@@ -30,7 +33,13 @@ default is FALSE and will return NULL invisibly}
 
 \item{seurat_max_pc}{The number of principal components to use; default is 15}
 
-\item{seurat_cluster_res}{Resolution parameter used with FindClusters; default is 0.8}
+\item{seurat_cluster_res}{Resolution parameter used with FindClusters; default is 0.3}
+
+\item{seurat_metric}{Distance metric to use for FindNeighbors and RunUMAP; default is manhattan}
+
+\item{seurat_k_param}{k.param parameter for FindNeighbors; default is 20}
+
+\item{seurat_n_neighbors}{n.neighbors parameter for RunUMAP; default is 40}
 
 \item{...}{parameters passed to rmarkdown::render, e.g. quiet = TRUE}
 }

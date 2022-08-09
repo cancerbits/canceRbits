@@ -8,7 +8,10 @@
 #' @param return_seurat Boolean indicating whether to return the final seurat object;
 #' default is FALSE and will return NULL invisibly
 #' @param seurat_max_pc The number of principal components to use; default is 15
-#' @param seurat_cluster_res Resolution parameter used with FindClusters; default is 0.8
+#' @param seurat_cluster_res Resolution parameter used with FindClusters; default is 0.3
+#' @param seurat_metric Distance metric to use for FindNeighbors and RunUMAP; default is manhattan
+#' @param seurat_k_param k.param parameter for FindNeighbors; default is 20
+#' @param seurat_n_neighbors n.neighbors parameter for RunUMAP; default is 40
 #' @param ... parameters passed to rmarkdown::render, e.g. quiet = TRUE
 #'
 #' @return NULL
@@ -24,7 +27,11 @@ cb_single_sample_report <- function(sample_counts,
                                     out_rds_path = NULL,
                                     return_seurat = FALSE,
                                     seurat_max_pc = 15,
-                                    seurat_cluster_res = 0.8, ...) {
+                                    seurat_cluster_res = 0.3,
+                                    seurat_metric = 'manhattan',
+                                    seurat_k_param = 20,
+                                    seurat_n_neighbors = 40,
+                                    ...) {
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop(
       "Package \"rmarkdown\" must be installed to use this function.",
