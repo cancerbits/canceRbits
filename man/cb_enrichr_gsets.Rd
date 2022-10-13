@@ -25,7 +25,7 @@ at \url{https://maayanlab.cloud/Enrichr/#libraries}.
 
 \examples{
 \donttest{
-filepath <- paste0('/data_synology_rg3/cancerbits/users/',
+filepath <- paste0('/bioinf_isilon/Research/HALBRITTER/Internal/users/',
                    'christoph_h/projects/gsea/enrichr_lib/',
                    'GO_Biological_Process_2021.tsv')
 genesets <- cb_enrichr_gsets(filepath = filepath)
