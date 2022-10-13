@@ -11,6 +11,25 @@
 #' input column names, 'neg', or 'multi'
 #'
 #' @section Details:
+#' Barcode-based demultiplexing using Gaussian finite mixture model (GMM) that
+#' identifies per pair of barcodes four groups of cells:
+#' G1) positive for barcode 1,
+#' G2) positive for barcode 2,
+#' G3) negative for both barcodes, and
+#' G4) positive for both barcodes.
+#' For each cell and barcode pair, we calculate the mean and relative differences
+#' (difference over the mean) of log10-transformed counts (pseudo-count added).
+#' In a first iteration, we use a 1-dimensional mixture model
+#' (mclust package; MClustSSC method; parameters: modelNames=”E”, G = 3) with
+#' relative differences as input and the following training data: the 50 cells
+#' with highest/lowest relative difference as positives for G1 and G2, 50 cells
+#' closest to the mean of G1 and G2 as G3. Based on the resulting classification
+#' we generate synthetic G4 training data by sampling cells assigned to
+#' G1 and G2 and combining their barcode counts (barcode 1 from G1 cells,
+#' barcode 2 from G2 cells). These synthetic doublet cells are added to the
+#' training data and a final 2-dimensional mixture model (parameters:
+#' modelNames=”VVV”, G = 4) with relative difference and mean as input is used
+#' for classification.
 #'
 #' @export
 #'
