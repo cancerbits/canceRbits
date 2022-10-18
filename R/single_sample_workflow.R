@@ -91,6 +91,7 @@ cb_seurat_pipeline <- function(x, max_pc = 15, metric = 'manhattan',
 #' Load count matrix given file
 #'
 #' @param path File path (h5 or rds)
+#' @param modality Slot to use in case file has multiple count matrices
 #'
 #' @return Sparse count matrix
 #'
@@ -102,10 +103,13 @@ cb_seurat_pipeline <- function(x, max_pc = 15, metric = 'manhattan',
 #'
 #' @importFrom tools file_ext
 #' @importFrom Seurat Read10X_h5
-cb_load_counts <- function(path) {
+cb_load_counts <- function(path, modality = 'Gene Expression') {
   ext <- toupper(file_ext(path))
   if (any(ext %in% c('H5', 'HDF5'))) {
     counts <- Read10X_h5(filename = path)
+    if (is.list(counts)) {
+      counts <- counts[[modality]]
+    }
   } else if (ext == 'RDS') {
     object <- readRDS(file = path)
     if (inherits(x = object, what = 'dgCMatrix')) {
