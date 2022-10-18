@@ -4,10 +4,12 @@
 \alias{cb_load_counts}
 \title{Load count matrix given file}
 \usage{
-cb_load_counts(path)
+cb_load_counts(path, modality = "Gene Expression")
 }
 \arguments{
 \item{path}{File path (h5 or rds)}
+
+\item{modality}{Slot to use in case file has multiple count matrices}
 }
 \value{
 Sparse count matrix
