@@ -57,36 +57,42 @@ cb_seurat_pipeline <- function(x, max_pc = 15, metric = 'manhattan',
 
   s <- SCTransform(s, verbose = verbose, method = "qpoisson")
   s <- RunPCA(s, npcs = max_pc, verbose = verbose)
-  #ElbowPlot(s, ndims = 50)
   dims <- 1:max_pc
+
   s <- RunUMAP(s, dims = dims, n.neighbors = n_neighbors, metric = metric,
                verbose = verbose)
   s <- FindNeighbors(s, reduction = "pca", dims = dims, verbose = verbose,
                      k.param = k_param, nn.method = "annoy", annoy.metric = metric)
   s <- FindClusters(s, resolution = cluster_res, verbose = verbose)
 
-  s$RNA@misc$markers <- cb_pos_markers(counts = s$RNA@counts, grouping = s$seurat_clusters)
-  s$RNA@misc$top_markers <- group_by(s$RNA@misc$markers, .data$group) %>%
-    filter(.data$logFC > 0.5, .data$logCPM > 3) %>%
-    mutate(grp_rank = 1:dplyr::n()) %>%
-    filter(.data$grp_rank <= 5)
+  # change to Seurat v5 Assay
+  counts_mat <- GetAssayData(s, assay = "RNA", slot = "counts")
+  cluster_labels <- s[["seurat_clusters", drop = TRUE]]
 
-  s <- GetResidual(s, features = s$RNA@misc$top_markers$feature, verbose = verbose)
-  s$log10_nCount_RNA <- log10(s$nCount_RNA)
+  s[["RNA"]]@misc$markers <- cb_pos_markers(counts = counts_mat, grouping = cluster_labels)
 
+  s[["RNA"]]@misc$top_markers <- s[["RNA"]]@misc$markers %>%
+    dplyr::group_by(.data$group) %>%
+    dplyr::filter(.data$logFC > 0.5, .data$logCPM > 3) %>%
+    dplyr::mutate(grp_rank = 1:dplyr::n()) %>%
+    dplyr::filter(.data$grp_rank <= 5)
+
+  s <- GetResidual(s, features = s[["RNA"]]@misc$top_markers$feature, verbose = verbose)
+  s$log10_nCount_RNA <- log10(s[["nCount_RNA"]])
+
+  # Plotting
   p1 <- DimPlot(s, label = TRUE, repel = TRUE)
-  #p2 <- DoHeatmap(s, features = s$SCT@misc$top_markers$gene, slot = "scale.data") + NoLegend()
   cells <- WhichCells(s, downsample = 100)
-  p2 <- DoHeatmap(s, features = s$RNA@misc$top_markers$feature, slot = "scale.data", cells = cells) + NoLegend()
-  p3 <- ggplot(s@meta.data, aes(.data$seurat_clusters, fill = .data$seurat_clusters)) + geom_bar() + NoLegend()
+  p2 <- DoHeatmap(s, features = s[["RNA"]]@misc$top_markers$feature, 
+                  slot = "scale.data", cells = cells) + NoLegend()
+  p3 <- ggplot(s@meta.data, aes(.data$seurat_clusters, fill = .data$seurat_clusters)) + 
+    geom_bar() + NoLegend()
   p4 <- VlnPlot(s, features = c('percent.mito', 'log10_nCount_RNA', 'nFeature_RNA'), pt.size = 0)
 
   common_title <- sprintf("Unsupervised clustering %s, %d cells", s@meta.data$orig.ident[1], ncol(s))
-  #show((((p1 / p3) + plot_layout(heights = c(3,2)) | p2) / p4) + plot_layout(widths = c(1, 2)) + plot_layout(heights = c(3,1)) + plot_annotation(title = common_title))
 
   return(list(s = s, figures = list(p1 = p1, p2 = p2, p3 = p3, p4 = p4), fig_title = common_title))
 }
-
 
 #' Load count matrix given file
 #'
