@@ -65,7 +65,7 @@ cb_filter_count_matrix <- function(
   
   keep <- 1:ncol(s)
 
-  ## --- 1) percent mitochondrial reads ---
+  ## 1) percent mitochondrial reads
   keep_this <- s[['percent.mito']][,1] <= percent_mito_th
   txt <- sprintf("Remove %d of %d\n(%1.1f%%) cells", sum(!keep_this), length(keep), sum(!keep_this) / length(keep) * 100)
   p1 <- ggplot(s@meta.data, aes(x = .data$percent.mito)) +
@@ -77,7 +77,7 @@ cb_filter_count_matrix <- function(
              vjust = 1, hjust = 1, label.r = unit(0, 'cm'))
   keep <- keep[keep_this]
 
-  ## --- 2) number of features ---
+  ## 2) number of features
   nFeature_RNA <- s@meta.data$nFeature_RNA[keep]
   nFeature_RNA_logscaled <- scale(log10(nFeature_RNA))
   keep_this <- nFeature_RNA >= min_features &
@@ -94,7 +94,7 @@ cb_filter_count_matrix <- function(
              vjust = 1, hjust = 1, label.r = unit(0, 'cm'))
   keep <- keep[keep_this]
 
-  ## --- 3) number of molecules ---
+  ## 3) number of molecules 
   nCount_RNA <- s@meta.data$nCount_RNA[keep]
   nCount_RNA_logscaled <- scale(log10(nCount_RNA))
   keep_this <- nCount_RNA_logscaled >= log_counts_z_th[1] &
@@ -113,7 +113,7 @@ cb_filter_count_matrix <- function(
              vjust = 1, hjust = 1, label.r = unit(0, 'cm'))
   keep <- keep[keep_this]
 
-  ## --- 4) transcripts vs genes ---
+  ## 4) transcripts vs genes
   md <- s@meta.data[keep, ]
   mod <- loess(log10(nFeature_RNA) ~ log10(nCount_RNA), data = md, span = 1)
   md$nFeature_outlier <- scale(mod$residuals) < feature_outlier_z_th[1] | 
@@ -141,7 +141,6 @@ cb_filter_count_matrix <- function(
 
   s <- s[, keep_cells, drop = FALSE]
   
-  # ✅ Seurat v5 fix: use GetAssayData instead of slot access
   if (!return_seurat) {
     s <- GetAssayData(s, slot = "counts", assay = "RNA")
   }
