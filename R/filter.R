@@ -46,6 +46,7 @@
 #' @importFrom ggplot2 aes
 #' @importFrom rlang .data
 #'
+
 cb_filter_count_matrix <- function(
   counts,
   percent_mito_th = 15,
@@ -56,49 +57,49 @@ cb_filter_count_matrix <- function(
   return_seurat = TRUE,
   sample_id = NULL,
   verbose = TRUE) {
-
+  
   s <- CreateSeuratObject(counts = counts)
-
+  
   s[['orig.ident']] <- sample_id
   s[['percent.mito']] <- PercentageFeatureSet(s, pattern = mito_pattern)
-  # at this point we can do some initial filtering based on gene expression metrics
-
-  # There are four steps
+  
   keep <- 1:ncol(s)
 
-  # 1) percent mitochondrial reads
-  keep_this <- s[['percent.mito']] <= percent_mito_th
+  ## --- 1) percent mitochondrial reads ---
+  keep_this <- s[['percent.mito']][,1] <= percent_mito_th
   txt <- sprintf("Remove %d of %d\n(%1.1f%%) cells", sum(!keep_this), length(keep), sum(!keep_this) / length(keep) * 100)
   p1 <- ggplot(s@meta.data, aes(x = .data$percent.mito)) +
     geom_histogram(binwidth = 1) +
-    geom_vline(xintercept = c(-Inf, percent_mito_th), color = 'red') +
+    geom_vline(xintercept = percent_mito_th, color = 'red') +
     xlab('Mitochondrial reads in %') +
     ylab('Cells') +
-    annotate('label', x = Inf, y = Inf, label = txt, size = theme_get()$text$size * 0.75 / ggplot2::.pt, vjust = 1, hjust = 1, label.r = unit(0, 'cm'))
+    annotate('label', x = Inf, y = Inf, label = txt, size = theme_get()$text$size * 0.75 / ggplot2::.pt, 
+             vjust = 1, hjust = 1, label.r = unit(0, 'cm'))
   keep <- keep[keep_this]
 
-  # 2) number of features
-  nFeature_RNA <- s$nFeature_RNA[keep]
+  ## --- 2) number of features ---
+  nFeature_RNA <- s@meta.data$nFeature_RNA[keep]
   nFeature_RNA_logscaled <- scale(log10(nFeature_RNA))
-  nFeature_RNA_logscaled[nFeature_RNA >= min_features] <- scale(log10(nFeature_RNA[nFeature_RNA >= min_features]))
-  keep_this <- nFeature_RNA >= min_features & nFeature_RNA_logscaled >= log_counts_z_th[1] & nFeature_RNA_logscaled <= log_counts_z_th[2]
-  th <- c(min(nFeature_RNA[keep_this]) - .Machine$double.eps*10,
-          max(nFeature_RNA[keep_this]) + .Machine$double.eps*10)
+  keep_this <- nFeature_RNA >= min_features &
+    nFeature_RNA_logscaled >= log_counts_z_th[1] &
+    nFeature_RNA_logscaled <= log_counts_z_th[2]
+  th <- range(nFeature_RNA[keep_this]) + c(-1e-10, 1e-10)
   txt <- sprintf("Remove %d of %d\n(%1.1f%%) cells", sum(!keep_this), length(keep), sum(!keep_this) / length(keep) * 100)
   p2 <- ggplot(s@meta.data[keep, ], aes(x = .data$nFeature_RNA)) +
     geom_histogram(binwidth = 33) +
     geom_vline(xintercept = th, color = 'red') +
     xlab('Number of genes detected') +
     ylab('Cells') +
-    annotate('label', x = Inf, y = Inf, label = txt, size = theme_get()$text$size * 0.75 / ggplot2::.pt, vjust = 1, hjust = 1, label.r = unit(0, 'cm'))
+    annotate('label', x = Inf, y = Inf, label = txt, size = theme_get()$text$size * 0.75 / ggplot2::.pt, 
+             vjust = 1, hjust = 1, label.r = unit(0, 'cm'))
   keep <- keep[keep_this]
 
-  # 3) number of molecules
-  nCount_RNA <- s$nCount_RNA[keep]
+  ## --- 3) number of molecules ---
+  nCount_RNA <- s@meta.data$nCount_RNA[keep]
   nCount_RNA_logscaled <- scale(log10(nCount_RNA))
-  keep_this <- nCount_RNA_logscaled >= log_counts_z_th[1] & nCount_RNA_logscaled <= log_counts_z_th[2]
-  th <- c(min(nCount_RNA[keep_this]) - .Machine$double.eps*10,
-          max(nCount_RNA[keep_this]) + .Machine$double.eps*10)
+  keep_this <- nCount_RNA_logscaled >= log_counts_z_th[1] &
+               nCount_RNA_logscaled <= log_counts_z_th[2]
+  th <- range(nCount_RNA[keep_this]) + c(-1e-10, 1e-10)
   txt <- sprintf("Remove %d of %d\n(%1.1f%%) cells", sum(!keep_this), length(keep), sum(!keep_this) / length(keep) * 100)
   p3 <- ggplot(s@meta.data[keep, ], aes(x = log10(.data$nCount_RNA))) +
     geom_histogram(binwidth = 0.04) +
@@ -108,38 +109,42 @@ cb_filter_count_matrix <- function(
     scale_x_continuous(breaks = log10(10^(0:7)), labels = as.character(10^(0:7))) +
     theme(panel.grid.minor = element_blank()) +
     annotation_logticks(sides = 'b') +
-    annotate('label', x = Inf, y = Inf, label = txt, size = theme_get()$text$size * 0.75 / ggplot2::.pt, vjust = 1, hjust = 1, label.r = unit(0, 'cm'))
+    annotate('label', x = Inf, y = Inf, label = txt, size = theme_get()$text$size * 0.75 / ggplot2::.pt, 
+             vjust = 1, hjust = 1, label.r = unit(0, 'cm'))
   keep <- keep[keep_this]
 
-  # 4) transcripts vs genes
+  ## --- 4) transcripts vs genes ---
   md <- s@meta.data[keep, ]
   mod <- loess(log10(nFeature_RNA) ~ log10(nCount_RNA), data = md, span = 1)
-  md$nFeature_outlier <- scale(mod$residuals) < feature_outlier_z_th[1] | scale(mod$residuals) > feature_outlier_z_th[2]
+  md$nFeature_outlier <- scale(mod$residuals) < feature_outlier_z_th[1] | 
+                         scale(mod$residuals) > feature_outlier_z_th[2]
   keep_this <- !md$nFeature_outlier
   txt <- sprintf("Remove %d of %d\n(%1.1f%%) cells", sum(!keep_this), length(keep), sum(!keep_this) / length(keep) * 100)
   p4 <- ggplot(md, aes(x = log10(.data$nCount_RNA), y = log10(.data$nFeature_RNA), color = .data$nFeature_outlier)) +
-    #coord_trans(x = 'log10', y = 'log10') +
-    geom_point(size = 0.5) + scale_color_manual(values = c('grey35', 'red'), guide = 'none') +
-    xlab('Transcripts') + ylab('Genes') +
+    geom_point(size = 0.5) + 
+    scale_color_manual(values = c('grey35', 'red'), guide = 'none') +
+    xlab('Transcripts') + 
+    ylab('Genes') +
     scale_y_continuous(breaks = log10((1:55)*1000), labels = (1:55)*1000) +
     scale_x_continuous(breaks = log10(10^(0:7)), labels = as.character(10^(0:7))) +
     theme(panel.grid.minor = element_blank()) +
     annotation_logticks() +
-    annotate('label', x = Inf, y = -Inf, label = txt, size = theme_get()$text$size * 0.75 / ggplot2::.pt, vjust = 0, hjust = 1, label.r = unit(0, 'cm'))
+    annotate('label', x = Inf, y = -Inf, label = txt, size = theme_get()$text$size * 0.75 / ggplot2::.pt, 
+             vjust = 0, hjust = 1, label.r = unit(0, 'cm'))
   keep <- keep[keep_this]
 
-  keep <- colnames(s)[keep]
-  txt <- sprintf('Sample %s; Keeping %d of %d cells (%1.2f percent)\n', sample_id, length(keep), ncol(s), length(keep)/ncol(s)*100)
-  if (verbose) {
-    message(txt)
-  }
+  keep_cells <- colnames(s)[keep]
+  txt <- sprintf('Sample %s; Keeping %d of %d cells (%1.2f percent)\n',
+                 sample_id, length(keep_cells), ncol(s),
+                 length(keep_cells)/ncol(s)*100)
+  if (verbose) message(txt)
 
-  #p <- plot_grid(p1, p2, p3, p4)
-  #p <- add_title(plot_obj = p, title_str = txt, rel_height = 0.08, font_face = 'bold')
-
-  s <- s[, keep]
+  s <- s[, keep_cells, drop = FALSE]
+  
+  # ✅ Seurat v5 fix: use GetAssayData instead of slot access
   if (!return_seurat) {
-    s <- s$RNA@counts
+    s <- GetAssayData(s, slot = "counts", assay = "RNA")
   }
+
   return(list(filtered = s, figures = list(p1, p2, p3, p4), fig_title = txt))
 }
