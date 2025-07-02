@@ -42,3 +42,6 @@ Exported functions have a `cb_` prefix in their name.
 [R packages by Hadley Wickham and Jenny Bryan](https://r-pkgs.org/index.html)
 
 [useful cheat sheet](https://rawgit.com/rstudio/cheatsheets/master/package-development.pdf)
+
+## For Seurat v5 add this line to the Rmd script to ensure compatibility
+options(Seurat.object.assay.version = 'v3')
