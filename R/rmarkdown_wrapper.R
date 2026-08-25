@@ -115,8 +115,8 @@ cb_single_sample_report <- function(sample_counts,
 #' @param gene_order_file The file with gene to location mappings; default is NULL and it will be downloaded from
 #' https://data.broadinstitute.org/Trinity/CTAT/cnv/gencode_v19_gene_pos.txt
 #' @param num_threads The number of CPU threads inferCNV will use; default is 1
-#' @param keep_infercnv_scores Boolean, if TRUE infercnv scores are kept in the output directory, else only the
-#' infercnv.png file is kept; default is FALSE
+#' @param convert Boolean, if TRUE infercnv score files are converted to .Rds in the output directory; default is FALSE
+#' @param cleanup Boolean, if TRUE remove intermediate infercnv output files; default is TRUE
 #' @param ... parameters passed to rmarkdown::render, e.g. quiet = TRUE
 #'
 #' @return NULL
@@ -127,7 +127,7 @@ cb_single_sample_report <- function(sample_counts,
 #' @export
 cb_infercnv_report <- function(counts, conditions, out_report_path, out_dir = NULL,
                                ref_conditions = NULL, gene_order_file = NULL,
-                               num_threads = 1, keep_infercnv_scores = FALSE, ...) {
+                               num_threads = 1, convert = FALSE, cleanup = TRUE, ...) {
 
 
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
@@ -148,7 +148,7 @@ cb_infercnv_report <- function(counts, conditions, out_report_path, out_dir = NU
 
   # do we need to clean up?
   do_clean_out_dir <- TRUE
-  if (!is.null(out_dir) | keep_infercnv_scores) {
+  if (!is.null(out_dir) | convert) {
     do_clean_out_dir <- FALSE
   }
 
@@ -181,7 +181,8 @@ cb_infercnv_report <- function(counts, conditions, out_report_path, out_dir = NU
                   gene_order_file = gene_order_file,
                   out_dir = out_dir,
                   num_threads = num_threads,
-                  keep_infercnv_scores = keep_infercnv_scores),
+                  convert = convert,
+                  cleanup = cleanup),
     output_file = basename(out_report_path),
     ...
   )
@@ -203,4 +204,3 @@ cb_infercnv_report <- function(counts, conditions, out_report_path, out_dir = NU
 
   return(invisible())
 }
-

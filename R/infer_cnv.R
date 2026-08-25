@@ -8,8 +8,8 @@
 #' @param gene_order_file The file with gene to location mappings; default is NULL and it will be downloaded from
 #' https://data.broadinstitute.org/Trinity/CTAT/cnv/gencode_v19_gene_pos.txt
 #' @param num_threads The number of CPU threads inferCNV will use; default is 1
-#' @param keep_infercnv_scores Boolean, if TRUE infercnv scores are kept in the output directory, else only the
-#' infercnv.png file is kept; default is FALSE
+#' @param convert Boolean, if TRUE infercnv score files are converted to .Rds in the output directory; default is FALSE
+#' @param cleanup Boolean, if TRUE remove intermediate infercnv output files; default is TRUE
 #'
 #' @return NULL (inferCNV output will be in out_dir)
 #'
@@ -20,7 +20,8 @@
 #'
 #' @export
 cb_run_infercnv <- function(counts, conditions, out_dir, ref_conditions = NULL,
-                            gene_order_file = NULL, num_threads = 1, keep_infercnv_scores = FALSE) {
+                            gene_order_file = NULL, num_threads = 1, convert = FALSE,
+                            cleanup = TRUE) {
 
   if (!requireNamespace("infercnv", quietly = TRUE)) {
     stop(
@@ -65,7 +66,7 @@ cb_run_infercnv <- function(counts, conditions, out_dir, ref_conditions = NULL,
     num_threads = num_threads
   )
 
-  if (keep_infercnv_scores) {
+  if (convert) {
     # convert the infercnv files to Rds
     for (f in list.files(path = out_dir, pattern = '^infercnv\\.(references|observations)\\.txt$', full.names = TRUE)) {
       mat <- read_infercnv_mat(file_path = f)
@@ -74,7 +75,9 @@ cb_run_infercnv <- function(counts, conditions, out_dir, ref_conditions = NULL,
   }
 
   # delete everything we don't need
-  unlink(x = list.files(path = out_dir, pattern = '\\.(txt|dat|preliminary\\.png)$', full.names = TRUE))
+  if (cleanup) {
+    unlink(x = list.files(path = out_dir, pattern = '\\.(txt|dat|preliminary\\.png)$', full.names = TRUE))
+  }
 
   return(invisible())
 }

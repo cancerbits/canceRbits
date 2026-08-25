@@ -12,7 +12,8 @@ cb_infercnv_report(
   ref_conditions = NULL,
   gene_order_file = NULL,
   num_threads = 1,
-  keep_infercnv_scores = FALSE,
+  convert = FALSE,
+  cleanup = TRUE,
   ...
 )
 }
@@ -33,8 +34,9 @@ https://data.broadinstitute.org/Trinity/CTAT/cnv/gencode_v19_gene_pos.txt}
 
 \item{num_threads}{The number of CPU threads inferCNV will use; default is 1}
 
-\item{keep_infercnv_scores}{Boolean, if TRUE infercnv scores are kept in the output directory, else only the
-infercnv.png file is kept; default is FALSE}
+\item{convert}{Boolean, if TRUE infercnv score files are converted to .Rds in the output directory; default is FALSE}
+
+\item{cleanup}{Boolean, if TRUE remove intermediate infercnv output files; default is TRUE}
 
 \item{...}{parameters passed to rmarkdown::render, e.g. quiet = TRUE}
 }
