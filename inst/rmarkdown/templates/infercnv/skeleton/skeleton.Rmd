@@ -14,7 +14,8 @@ params:
   gene_order_file: ~
   out_dir: ~
   num_threads: 1
-  keep_infercnv_scores: false
+  convert: false
+  cleanup: true
 ---
 
 # Setup
@@ -48,15 +49,16 @@ sample_data <- readRDS(params$data_path)
 cb_run_infercnv(counts = sample_data$counts, 
                 conditions = sample_data$conditions, 
                 ref_conditions = sample_data$ref_conditions, 
-                out_dir = out_dir,
+                out_dir = params$out_dir,
                 gene_order_file = params$gene_order_file, 
                 num_threads = params$num_threads, 
-                keep_infercnv_scores = params$keep_infercnv_scores)
+                convert = params$convert,
+                cleanup = params$cleanup)
 ```
 
 # Show result heatmap
 ```{r, out.width='100%'}
-fig_path <- file.path(out_dir, 'infercnv.png')
+fig_path <- file.path(params$out_dir, 'infercnv.png')
 knitr::include_graphics(fig_path)
 ```
 
